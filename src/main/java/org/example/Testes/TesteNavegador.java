@@ -11,6 +11,10 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
+
 public class TesteNavegador {
 
 
@@ -23,31 +27,43 @@ public class TesteNavegador {
    }
 
    @Test
-   public void testarPaginaHome() throws InterruptedException {
+   public void testarPaginaHome() throws InterruptedException, AWTException {
+      //Abre a URL informada
       driver.get("https://demo.automationtesting.in/");
+      driver.manage().window().maximize();
 
+      //Inclui o e-mail no campo e depois deleta caso ocorra erro
       driver.findElement(By.xpath("//*[@id=\"email\"]")).sendKeys("teste@gmail.com");
       Thread.sleep(2000);
+      //Reenvia outro e-mail
       driver.findElement(By.id("email")).clear();
-      Thread.sleep(2000);
+      Thread.sleep(1000);
       driver.findElement(By.xpath("//*[@id=\"email\"]")).sendKeys("teste@gmail.com");
       //driver.findElement(By.id("email")).sendKeys("teste@gmail.com");
-      Thread.sleep(2000);
+      Thread.sleep(500);
+      //Clica no botão enviar
       driver.findElement(By.id("enterimg")).click();
       Thread.sleep(500);
+      //Preenche o Nome
       driver.findElement(By.xpath("//*[@id=\"basicBootstrapForm\"]/div[1]/div[1]/input")).sendKeys("Nome");
       Thread.sleep(500);
+      //Preenche o sobrenome
       driver.findElement(By.xpath("//*[@id=\"basicBootstrapForm\"]/div[1]/div[2]/input")).sendKeys("Sobrenome");
       Thread.sleep(500);
+      //Preenche o endereço
       driver.findElement(By.xpath("//*[@id=\"basicBootstrapForm\"]/div[2]/div/textarea"))
               .sendKeys("Rua XYZ, 44, Curitiba-PR");
       Thread.sleep(500);
+      //Preenche o e-mail
       driver.findElement(By.xpath("//*[@id=\"eid\"]/input")).sendKeys("teste@gmail.com");
       Thread.sleep(500);
+      //Preenche o telefone
       driver.findElement(By.xpath("//*[@id=\"basicBootstrapForm\"]/div[4]/div/input")).sendKeys("44 99999-9999");
       Thread.sleep(500);
+      //Preenche o campo male
       driver.findElement(By.xpath("//*[@id=\"basicBootstrapForm\"]/div[5]/div/label[1]/input")).click();
       Thread.sleep(500);
+      //Preenche a linguagem
       driver.findElement(By.xpath("//*[@id=\"checkbox2\"]")).click();
       Thread.sleep(500);
       // Preenche o campo Languages que é um tipo multi-select
@@ -63,22 +79,55 @@ public class TesteNavegador {
       opcaoEnglish.click();
       driver.findElement(By.xpath("//*[@id=\"section\"]/div/div")).click();
 
-      Select skill = new Select(driver.findElement(By.xpath("//*[@id=\"Skills\"]")));
-      skill.selectByVisibleText("Java");
+      //Thread.sleep(2000);
+
+      //Select form-control para skills
+      driver.findElement(By.xpath("//*[@id=\"Skills\"]")).sendKeys("Java");
+
+      // Select Country
+      driver.findElement(By.xpath("//*[@id=\"basicBootstrapForm\"]/div[10]/div/span/span[1]/span/span[2]/b")).click();
+      driver.findElement(By.xpath("//*[@id=\"country\"]")).sendKeys("United States of America");
+      driver.findElement(By.xpath("//*[@id=\"basicBootstrapForm\"]/div[10]/div/span/span[1]/span/span[2]/b")).click();
+
+      // Preencher o ano do aniversário, mês e dia, respectivamente
+      driver.findElement(By.xpath("//*[@id=\"yearbox\"]")).sendKeys("2023");
+      driver.findElement(By.xpath("//*[@id=\"basicBootstrapForm\"]/div[11]/div[2]/select")).sendKeys("April");
+      driver.findElement(By.xpath("//*[@id=\"daybox\"]")).sendKeys("23");
+
+      // Preencher os dois campos: Password e Confirm Password. Obviamente, cada campo deverá ter o seu próprio XPath
+      driver.findElement(By.xpath("//*[@id=\"firstpassword\"]")).sendKeys("senha");
+      driver.findElement(By.xpath("//*[@id=\"secondpassword\"]")).sendKeys("senha");
+
+       //Anexar a imagem ao clicar no botão "Escolher ficheiro"
+      driver.findElement(By.xpath("//*[@id=\"section\"]/div/div/div[3]/div[2]")).click();
+      // Armazene o caminho da URL onde está a imagem
+      String urlImagem = "/Users/brunofaria/Desktop/SENAI/Teste Sistemas/FormularioSelenium/avatar.jpg";
+
+      Robot robot = new Robot();
+
+      // Aguardar a janela ser aberta
       Thread.sleep(1000);
-      driver.findElement(By.xpath("//*[@id=\"select2-country-container\"]")).click();
 
-      Thread.sleep(500);
+      // Copie o caminho do arquivo para a área de transferência
+      StringSelection selection = new StringSelection(urlImagem);
+      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, null);
 
-     // driver.findElement(By.xpath("driver.findElement(By.xpath(\"//*[@id=\\\"basicBootstrapForm\\\"]/div[1]/div[1]/input\")).sendKeys(\"Nome\");\n")).sendKeys("United States of America");
-      Thread.sleep(500);
+      // Pressione Ctrl + V para colar o caminho do arquivo na janela de diálogo
+      robot.keyPress(KeyEvent.VK_CONTROL);
+      robot.keyPress(KeyEvent.VK_V);
+      robot.keyRelease(KeyEvent.VK_V);
+      robot.keyRelease(KeyEvent.VK_CONTROL);
 
-      Select year = new Select(driver.findElement(By.id("yearbox")));
-      year.selectByVisibleText("2000");
-      Select month = new Select(driver.findElement(By.xpath("//*[@id=\"basicBootstrapForm\"]/div[11]/div[2]/select")));
-      month.selectByVisibleText("April");
-      Select day = new Select(driver.findElement(By.id("daybox")));
-      day.selectByVisibleText("23");
+      // Pressione Enter para confirmar o upload
+      robot.keyPress(KeyEvent.VK_ENTER);
+      robot.keyRelease(KeyEvent.VK_ENTER);
+
+      // Espera para que o envio do arquivo seja concluído
+      Thread.sleep(5000);
+
+      // Clique no botão "Submit"
+      driver.findElement(By.xpath("//*[@id=\"submitbtn\"]")).click();
+
 
 
       //finalizar();
